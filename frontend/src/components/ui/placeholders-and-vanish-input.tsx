@@ -4,21 +4,26 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "../../../lib/utils";
 
+interface Props {
+  placeholders: string[];
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  disabled?: boolean;
+}
+
 export function PlaceholdersAndVanishInput({
   placeholders,
   onChange,
   onSubmit,
-}: {
-  placeholders: string[];
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-}) {
+  disabled = false,
+}: Props) {
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [isFocused, setIsFocused] = useState(false);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const startAnimation = () => {
-    if (!isFocused) {  // Only start animation if not focused
+    if (!isFocused) {
+      // Only start animation if not focused
       intervalRef.current = setInterval(() => {
         setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);
       }, 3000);
@@ -29,13 +34,15 @@ export function PlaceholdersAndVanishInput({
     if (document.visibilityState !== "visible" && intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
-    } else if (document.visibilityState === "visible" && !isFocused) {  // Only restart if not focused
+    } else if (document.visibilityState === "visible" && !isFocused) {
+      // Only restart if not focused
       startAnimation();
     }
   };
 
   useEffect(() => {
-    if (!isFocused) {  // Only start animation if not focused
+    if (!isFocused) {
+      // Only start animation if not focused
       startAnimation();
     }
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -69,7 +76,7 @@ export function PlaceholdersAndVanishInput({
     const fontSize = parseFloat(computedStyles.getPropertyValue("font-size"));
     ctx.font = `${fontSize * 2}px ${computedStyles.fontFamily}`;
     ctx.fillStyle = "#000";
-    ctx.fillText(value || placeholders[currentPlaceholder], 16, 40);  // Use placeholder if no value
+    ctx.fillText(value || placeholders[currentPlaceholder], 16, 40); // Use placeholder if no value
 
     const imageData = ctx.getImageData(0, 0, 800, 800);
     const pixelData = imageData.data;
@@ -162,36 +169,42 @@ export function PlaceholdersAndVanishInput({
   };
 
   const vanishAndSubmit = () => {
+    console.log("Vanish and submit called with value:", value);
     setAnimating(true);
     draw();
 
-    const textToSubmit = value || placeholders[currentPlaceholder];  // Use placeholder if no value
+    const textToSubmit = value || placeholders[currentPlaceholder];
     if (textToSubmit && inputRef.current) {
       const maxX = newDataRef.current.reduce(
         (prev, current) => (current.x > prev ? current.x : prev),
         0
       );
       animate(maxX);
-      
-      // Create a synthetic event with the current placeholder as value
-      if (!value) {
-        const syntheticEvent = {
-          target: { value: placeholders[currentPlaceholder] },
-          preventDefault: () => {},
-        } as unknown as React.ChangeEvent<HTMLTextAreaElement>;
-        onChange(syntheticEvent);
+
+      // Create a form submit event with the correct data
+      const formElement = inputRef.current.closest("form");
+      if (formElement) {
+        const formData = new FormData();
+        formData.append("message", textToSubmit);
+        const submitEvent = new SubmitEvent("submit", { cancelable: true });
+        Object.defineProperty(submitEvent, "target", { value: formElement });
+        onSubmit(submitEvent as unknown as React.FormEvent<HTMLFormElement>);
       }
     }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log(
+      "Form submitted with value:",
+      value || placeholders[currentPlaceholder]
+    );
     vanishAndSubmit();
     onSubmit && onSubmit(e);
   };
 
   const adjustTextareaHeight = (textarea: HTMLTextAreaElement) => {
-    textarea.style.height = 'auto';
+    textarea.style.height = "auto";
     textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`;
   };
 
@@ -211,6 +224,7 @@ export function PlaceholdersAndVanishInput({
         ref={canvasRef}
       />
       <textarea
+        name="message" // Add name attribute for FormData
         onChange={(e) => {
           if (!animating) {
             setValue(e.target.value);
@@ -227,7 +241,8 @@ export function PlaceholdersAndVanishInput({
         }}
         onBlur={() => {
           setIsFocused(false);
-          if (!value) {  // Only restart animation if there's no value
+          if (!value) {
+            // Only restart animation if there's no value
             startAnimation();
           }
         }}
@@ -235,14 +250,16 @@ export function PlaceholdersAndVanishInput({
         ref={inputRef}
         value={value}
         rows={1}
+        disabled={disabled}
         className={cn(
           "w-full resize-none overflow-y-auto text-sm sm:text-base z-50 border-none text-white bg-transparent h-auto min-h-[3rem] max-h-[200px] focus:outline-none focus:ring-0 pl-4 sm:pl-10 pr-20 py-3",
-          animating && "text-white"
+          animating && "text-white",
+          disabled && "opacity-50 cursor-not-allowed"
         )}
       />
 
       <button
-        disabled={!value && !placeholders[currentPlaceholder]}  // Enable button if there's a placeholder
+        disabled={(!value && !placeholders[currentPlaceholder]) || disabled} // Enable button if there's a placeholder
         type="submit"
         className="absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full disabled:bg-gray-700 bg-white dark:bg-zinc-900 dark:disabled:bg-zinc-800 transition duration-200 flex items-center justify-center"
       >
@@ -266,7 +283,8 @@ export function PlaceholdersAndVanishInput({
               strokeDashoffset: "50%",
             }}
             animate={{
-              strokeDashoffset: value || placeholders[currentPlaceholder] ? 0 : "50%",
+              strokeDashoffset:
+                value || placeholders[currentPlaceholder] ? 0 : "50%",
             }}
             transition={{
               duration: 0.3,

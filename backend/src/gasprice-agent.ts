@@ -3,15 +3,39 @@ import { z } from "zod";
 import "dotenv/config";
 import { Chain, GoldRushClient } from "@covalenthq/client-sdk";
 import serializeBigInt from "./utils/serializebigint";
-const client = new GoldRushClient(process.env.COVALENT_API_KEY!);
+const client = new GoldRushClient(process.env.GOLDRUSH_API_KEY!);
+// Get chain values dynamically using getAllChains()
+const getChainValues = async (): Promise<[string, ...string[]]> => {
+  try {
+    const response = await client.BaseService.getAllChains();
+    if (response.error || !response.data?.items) {
+      return ["eth-mainnet"] as [string, ...string[]];
+    }
+    
+    const chains = response.data.items.map(chain => chain.name);
+    return [chains[0], ...chains.slice(1)] as [string, ...string[]];
+  } catch (error) {
+    console.error('Failed to fetch chains:', error);
+    return ["eth-mainnet"] as [string, ...string[]];
+  }
+};
 const gasPriceTool = createTool({
   id: "gas-price-tool",
   description:
     "Fetch real-time gas price estimates for a specific blockchain network.",
   schema: z.object({
     chainId: z
-      .enum(["eth-mainnet", "1"])
-      .describe("The chain name (eth-mainnet or 1)"),
+      .string()
+      .describe("The chain identifier (e.g., eth-mainnet, matic-mainnet)")
+      .refine(
+        async (val) => {
+          const chains = await getChainValues();
+          return chains.includes(val);
+        },
+        {
+          message: "Invalid chain identifier",
+        }
+      ),
     eventType: z
       .enum(["erc20", "nativetokens", "uniswapv3"])
       .describe("Type of transaction (erc20, nativetokens, or uniswapv3)"),

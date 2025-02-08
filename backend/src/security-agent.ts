@@ -3,24 +3,24 @@ import { z } from "zod";
 import "dotenv/config";
 import { Chain, GoldRushClient } from "@covalenthq/client-sdk";
 import serializeBigInt from "./utils/serializebigint";
-const client = new GoldRushClient(process.env.COVALENT_API_KEY!);
+const client = new GoldRushClient(process.env.GOLDRUSH_API_KEY!);
 
 // Security Tool: Retrieve token and NFT approvals -- it means the wallet has approved a contract to spend its tokens or NFTs on its behalf without user interaction for each transaction it gives those contracts
 const securityTool = createTool({
   id: "security-tool",
   description: "Retrieve token and NFT approvals for a wallet.",
   schema: z.object({
-    chainId: z.string(),
+    chainName: z.string(),
     walletAddress: z.string(),
   }),
   execute: async (parameters: unknown) => {
     try {
-      const { chainId, walletAddress } = parameters as {
-        chainId: Chain;
+      const { chainName, walletAddress } = parameters as {
+        chainName: Chain;
         walletAddress: string;
       };
       const approvals = await client.SecurityService.getApprovals(
-        chainId,
+        chainName,
         walletAddress
       );
 
@@ -53,7 +53,7 @@ const securityAgent = new Agent({
     "Monitors and analyzes token and NFT approvals for potential security risks.",
   instructions: [
     "Use the security tool to check a wallet's token and NFT approvals.",
-    "Ensure the user provides a valid blockchain network (chainId) and wallet address.",
+    "Ensure the user provides a valid blockchain network (chainName) and wallet address.",
     "Flag any unusual or potentially risky approvals, such as unlimited spending allowances.",
   ],
   tools: { securityTool },
