@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { PlaceholdersAndVanishInput } from "./ui/placeholders-and-vanish-input";
 import { formatResponse } from "../utils/formatResponse";
+import WalletIcon from "./WalletIcon";
 
 interface Message {
   role: "user" | "assistant" | "tool-response" | "error";
@@ -113,53 +114,53 @@ export default function Chat() {
         ];
 
         return (
-            <div className="w-full min-h-screen bg-zinc-950 flex justify-center">
-                <div className="w-[50%] mx-auto bg-zinc-900 max-w-4xl px-4 md:px-6 h-screen flex flex-col">
-                    {wsError && (
-                        <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-2 rounded-md mt-2">
-                            {wsError}
-                        </div>
-                    )}
-                    <div className="flex-1 overflow-y-auto py-4 space-y-4">
-                        {messages.map((msg, idx) => (
-                            <div
-                                key={idx}
-                                className={`p-4 rounded-lg ${msg.role === "user"
-                                    ? "bg-zinc-800 ml-auto max-w-[80%]"
-                                    : "bg-zinc-700 mr-auto max-w-[80%]"
-                                    }`}
-                            >
-                                <pre className="whitespace-pre-wrap text-white font-mono text-sm">
-                                    {msg.content}
-                                </pre>
-                            </div>
-                        ))}
-                        {isLoading && (
-                            <div className="bg-zinc-700 mr-auto max-w-[80%] p-4 rounded-lg">
-                                <div className="flex items-center space-x-2">
-                                    <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                                    <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                                    <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce"></div>
-                                </div>
-                            </div>
-                        )}
-                        <div ref={messagesEndRef} />
-                    </div>
-
-                    <div className="py-4 relative">
-          
-
-             
-                    </div>
-         
-                    <PlaceholdersAndVanishInput
-                        placeholders={placeholders}
-                        onChange={handleInputChange}
-                        onSubmit={handleSubmit}
-                        disabled={isLoading || !ws || ws.readyState !== WebSocket.OPEN}
-                    />
-                </div>
+          <div className="w-full min-h-screen bg-zinc-950 flex justify-center">
+            <div className="absolute top-10 text-white">
+              <WalletIcon />
             </div>
+            <div className="w-[50%] mx-auto bg-zinc-900 max-w-4xl px-4 md:px-6 h-screen flex flex-col">
+              {wsError && (
+                <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-2 rounded-md mt-2">
+                  {wsError}
+                </div>
+              )}
+              <div className="flex-1 overflow-y-auto py-4 space-y-4">
+                {messages.map((msg, idx) => (
+                  <div
+                    key={idx}
+                    className={`p-4 rounded-lg ${
+                      msg.role === "user"
+                        ? "bg-zinc-800 ml-auto max-w-[80%]"
+                        : "bg-zinc-700 mr-auto max-w-[80%]"
+                    }`}
+                  >
+                    <pre className="whitespace-pre-wrap text-white font-mono text-sm">
+                      {msg.content}
+                    </pre>
+                  </div>
+                ))}
+                {isLoading && (
+                  <div className="bg-zinc-700 mr-auto max-w-[80%] p-4 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                      <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                      <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce"></div>
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+
+              <div className="py-4 relative"></div>
+
+              <PlaceholdersAndVanishInput
+                placeholders={placeholders}
+                onChange={handleInputChange}
+                onSubmit={handleSubmit}
+                disabled={isLoading || !ws || ws.readyState !== WebSocket.OPEN}
+              />
+            </div>
+          </div>
         );
     }
 

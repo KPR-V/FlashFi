@@ -25,3 +25,5 @@ test
 *.sw?
 trial.ts
 .env
+stake.ts
+abi
