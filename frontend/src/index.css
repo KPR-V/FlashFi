@@ -5,3 +5,46 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+@font-face {
+  font-family: "Telma";
+  font-weight: 100 900;
+  src: local("Telma"),
+    url("../Fonts/Telma-Variable.ttf")
+      format("ttf");
+}
+
+@font-face {
+  font-family: 'Cabinet Grotesk';
+  font-weight: 100 900;
+  src: local('Cabinet Grotesk'),
+    url("../Fonts/Telma-Variable.woff")
+      format("woff");
+}
+
+.typewriter-div{
+   display: inline-block;
+   
+}
+
+.typewriter-text{
+  border-right:3px solid;
+  white-space: nowrap;
+  overflow: hidden;
+  animation: typing 2s,
+             cursor 0.7s step-end infinite  alternate;
+}
+
+@keyframes cursor {
+  60% { border-color: pink; 
+   }
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+.shadow-glow {
+  box-shadow: 0 0 45px 25px rgba(236, 72, 153, 0.7);
+}

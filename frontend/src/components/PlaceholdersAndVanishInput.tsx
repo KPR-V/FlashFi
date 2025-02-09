@@ -35,7 +35,7 @@ export default function PlaceholdersAndVanishInputDemo() {
   };
 
   return (
-    <div className="h-[20rem] flex flex-col justify-center items-center px-4 text-white">
+    <div className="h-[10rem] flex flex-col justify-center items-center px-4 text-white">
       <PlaceholdersAndVanishInput
         placeholders={placeholders}
         onChange={handleChange}

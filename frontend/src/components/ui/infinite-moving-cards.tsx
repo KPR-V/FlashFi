@@ -1,7 +1,7 @@
 import { cn } from "../../../lib/utils";
 import React, { useEffect, useState } from "react";
 
-export const InfiniteMovingCards = ({
+export function InfiniteMovingCards({
   items,
   direction = "left",
   speed = "fast",
@@ -16,7 +16,7 @@ export const InfiniteMovingCards = ({
   speed?: "fast" | "normal" | "slow";
   pauseOnHover?: boolean;
   className?: string;
-}) => {
+}) {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const scrollerRef = React.useRef<HTMLUListElement>(null);
   const [start, setStart] = useState(false);
@@ -45,15 +45,9 @@ export const InfiniteMovingCards = ({
   const getDirection = () => {
     if (containerRef.current) {
       if (direction === "left") {
-        containerRef.current.style.setProperty(
-          "--animation-direction",
-          "forwards"
-        );
+        containerRef.current.style.setProperty("--animation-direction", "forwards");
       } else {
-        containerRef.current.style.setProperty(
-          "--animation-direction",
-          "reverse"
-        );
+        containerRef.current.style.setProperty("--animation-direction", "reverse");
       }
     }
   };
@@ -111,4 +105,3 @@ export const InfiniteMovingCards = ({
   );
 };
 
-export default InfiniteMovingCards;

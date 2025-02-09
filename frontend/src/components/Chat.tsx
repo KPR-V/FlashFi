@@ -8,8 +8,6 @@ interface Message {
   content: string;
 }
 
-
-
 export default function Chat() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [ws, setWs] = useState<WebSocket | null>(null);

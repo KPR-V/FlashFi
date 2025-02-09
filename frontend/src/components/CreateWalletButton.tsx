@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ShinyText from "./ui/ShinyText";
 
 export default function CreateWalletButton() {
   const [loading, setLoading] = useState(false);
@@ -27,15 +28,16 @@ export default function CreateWalletButton() {
   };
 
   return (
-    <div className="mb-4">
+    <div>
       <button
         onClick={createWallet}
         disabled={loading}
-        className={`px-4 py-2 rounded ${
-          loading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
-        } text-white`}
+        className={``}
       >
-        {loading ? "Creating..." : "Create Server Wallet"}
+        <ShinyText text= {loading ? "Creating..." : "Create Server Wallet"} disabled={loading} speed={3} className="text-sm font-CabinetGrotesk font-medium text-pink-600"
+        >
+        
+        </ShinyText>
       </button>
 
       {error && <div className="mt-2 text-red-600">{error}</div>}

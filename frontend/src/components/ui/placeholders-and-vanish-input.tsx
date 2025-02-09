@@ -211,14 +211,14 @@ export function PlaceholdersAndVanishInput({
   return (
     <form
       className={cn(
-        "w-full relative max-w-xl mx-auto bg-black dark:bg-zinc-800 rounded-lg overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200",
+        "w-full relative max-w-xl  bg-zinc-900 mx-auto rounded-lg overflow-hidden  transition duration-200",
         value && "bg-zinc-900"
       )}
       onSubmit={handleSubmit}
     >
       <canvas
         className={cn(
-          "absolute pointer-events-none text-base transform scale-50 top-[20%] left-2 sm:left-8 origin-top-left filter invert dark:invert-0 pr-0",
+          "absolute pointer-events-none  text-base transform scale-50 top-[20%] left-2 sm:left-8 origin-top-left filter invert dark:invert-0 pr-0",
           !animating ? "opacity-0" : "opacity-100"
         )}
         ref={canvasRef}
@@ -252,7 +252,7 @@ export function PlaceholdersAndVanishInput({
         rows={1}
         disabled={disabled}
         className={cn(
-          "w-full resize-none overflow-y-auto text-sm sm:text-base z-50 border-none text-white bg-transparent h-auto min-h-[3rem] max-h-[200px] focus:outline-none focus:ring-0 pl-4 sm:pl-10 pr-20 py-3",
+          "w-full resize-none overflow-y-auto no-scrollbar text-sm sm:text-base  z-50 border-none text-white bg-transparent h-auto min-h-[3rem] max-h-[200px] focus:outline-none focus:ring-0 pl-4 sm:pl-10 pr-16 py-3",
           animating && "text-white",
           disabled && "opacity-50 cursor-not-allowed"
         )}
