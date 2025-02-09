@@ -62,20 +62,20 @@ export default function Chat() {
             }
         };
 
-            websocket.onclose = () => {
-                console.log("Disconnected from server");
-                setWs(null);
-                setWsError("Connection lost. Retrying...");
-                setTimeout(connectWebSocket, 3000); // Retry connection after 3 seconds
-            };
+      websocket.onclose = () => {
+        console.log("Disconnected from server");
+        setWs(null);
+        setWsError("Connection lost. Retrying...");
+        setTimeout(connectWebSocket, 3000); // Retry connection after 3 seconds
+      };
 
-            websocket.onerror = (error) => {
-                console.error("WebSocket error:", error);
-                setWsError("Connection error occurred");
-            };
-        };
+      websocket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        setWsError("Connection error occurred");
+      };
+    };
 
-        connectWebSocket();
+    connectWebSocket();
 
         return () => {
             if (ws) {
@@ -84,11 +84,9 @@ export default function Chat() {
         };
     }, [initialMessage]);
 
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
-
-  
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -121,10 +119,10 @@ export default function Chat() {
       }
   };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        // Process the input change if needed
-        console.log('Input changed:', e.target.value);
-    };
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    // Process the input change if needed
+    console.log("Input changed:", e.target.value);
+  };
 
     const placeholders = [
             "Check my wallet balance on Ethereum",
@@ -190,16 +188,15 @@ export default function Chat() {
                 <div ref={messagesEndRef} />
               </div>
 
-              <div className="py-4 relative"></div>
+        <div className="py-4 relative"></div>
 
-              <PlaceholdersAndVanishInput
-                placeholders={placeholders}
-                onChange={handleInputChange}
-                onSubmit={handleSubmit}
-                disabled={isLoading || !ws || ws.readyState !== WebSocket.OPEN}
-              />
-            </div>
-          </div>
-        );
-    }
-
+        <PlaceholdersAndVanishInput
+          placeholders={placeholders}
+          onChange={handleInputChange}
+          onSubmit={handleSubmit}
+          disabled={isLoading || !ws || ws.readyState !== WebSocket.OPEN}
+        />
+      </div>
+    </div>
+  );
+}

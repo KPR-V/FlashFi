@@ -149,10 +149,10 @@ Destination Transaction:
       const tx = data as TransactionResponse;
       return `Transaction Details:
 🟢 Status: ${tx.status}
-📝 Hash: ${tx.hash}
+📝 Hash: ${tx.hash.slice(0, 32)}...${tx.hash.slice(-8)}
 🔢 Block: ${tx.blockNumber}
-👤 From: ${tx.from}
-👥 To: ${tx.to}
+👤 From: ${tx.from.slice(0, 6)}...${tx.from.slice(-4)}
+👥 To: ${tx.to.slice(0, 6)}...${tx.to.slice(-4)}
 💰 Amount: ${tx.amount} ETH
 ⛽ Gas Cost: ${tx.gasCost} ETH`;
     }
