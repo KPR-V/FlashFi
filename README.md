@@ -84,16 +84,17 @@ PORT=3000
 Open **[http://localhost:5173](http://localhost:5173)** in your browser.
 
 ## 🛠 Features & Usage ✨
+:
+You can interact with the AI-powered assistant via a **chat interface**. Here are some example prompts:
 
-Interact with the AI assistant via chat:
+- ✨ **Staking:** `Stake my 10 usdt on binance to radiant lending pool on arbitrum in usdc` 
+- ✨ **Swapping:** `Swap 0.1 usdc on eth-mainnet to eth on arbitrum` 
+- ✨ **Balance Check:** `what is the balance of <wallet_address> on <chain>` 
+- ✨ **Security Audit:** `check approvals for <wallet_address> on <chain>` 
+- ✨ **Gas Price Query:** `gas price on <chain>` 
+- ✨ **USDC Bridging:** `bridge 10 usdc from eth sepolia to avalanche fuji` 
+- ✨ **Send Transaction:** `send <amount> to <wallet_address>` 
 
-- ✨ `Stake 100 USDT on Radiant` 
-- ✨ `Swap 50 ETH for USDC` 
-- ✨ `What's my ETH balance?` 
-- ✨ `Check my wallet for risky approvals` 
-- ✨ `What's the current gas price?` 
-- ✨ `Bridge 1000 USDC from Ethereum to Avalanche` 
-- ✨ `Send 0.1 ETH to 0x1234...` 
 
 ## 🔄 Data Flow 
 
