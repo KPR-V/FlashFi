@@ -17,11 +17,11 @@ export default function PlaceholdersAndVanishInputDemo() {
   };
 
   const placeholders = [
-    "What's the first rule of Fight Club?",
-    "Who is Tyler Durden?", 
-    "Where is Andrew Laeddis Hiding?",
-    "Write a Javascript method to reverse a string",
-    "How to assemble your own PC?",
+    "what can you do for me?",
+    "What's up?",
+    "what is the gas price on matic-mainnet?",
+    "send 0.01 eth sepolia to 0x1234567890abcdef",
+    "bridge 0.1 usdc from et sepolia to arbitrum fuji", 
   ];
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

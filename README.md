@@ -1,6 +1,30 @@
+<a name="readme-top"></a>
+
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+
+<br />
+<div align="center">
+  <a href="https://flashfi.gitbook.io/flashfi/">
+    <img src="frontend/Images/Untitled.png" alt="Logo" width="200" height="200">
+  </a>
+
+
 # ⚡ FlashFi: AI-Powered Blockchain Assistant with Cross-Chain Capabilities 
 
 FlashFi is an **agentic AI assistant** made using **Covalent's AI Agent Kit** and **Privy's server wallets**. It enables seamless blockchain operations like **staking**, **swapping**, **balance checks**, **security audits**, **gas price queries**, and **USDC bridging** between networks. 
+<p align="center">
+    <a href="https://flashfi.gitbook.io/flashfi/">📖 View Docs</a>
+    ·
+    <a href="https://github.com/KPR-V/FlashFi/issues/new?labels=bug&template=bug-report.md">🐛 Report Bug</a>
+    ·
+    <a href="https://github.com/KPR-V/FlashFi/issues/new?labels=enhancement&template=feature-request.md">✨ Request Feature</a>
+  </p>
+
+</div>
 
 ## 📁 Repository Structure 
 
@@ -51,11 +75,6 @@ AVAX_PRIVATE_KEY=<ADD_RECEIPIENT_ADDRESS_PRIVATE_KEY>
 PORT=3000
 ```
 
-📌 **Create `.env` file in `frontend/`:** 
-```ini
-VITE_BACKEND_URL=http://localhost:3000
-```
-
 ### ▶️ Running the Application 
 ```sh
  cd backend && npm run dev
@@ -97,3 +116,15 @@ FlashFi utilizes:
 - **OpenAI** for intelligent agent decisions 🧠
 
 🎉 **Now you're ready to experience FlashFi!** 🚀
+
+<!-- MARKDOWN LINKS & IMAGES -->
+[contributors-shield]: https://img.shields.io/github/contributors/KPR-V/FlashFi.svg?style=for-the-badge
+[contributors-url]: https://github.com/KPR-V/FlashFi/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/KPR-V/FlashFi.svg?style=for-the-badge
+[forks-url]: https://github.com/KPR-V/FlashFi/network/members
+[stars-shield]: https://img.shields.io/github/stars/KPR-V/FlashFi.svg?style=for-the-badge
+[stars-url]: https://github.com/KPR-V/FlashFi/stargazers
+[issues-shield]: https://img.shields.io/github/issues/KPR-V/FlashFi.svg?style=for-the-badge
+[issues-url]: https://github.com/KPR-V/FlashFi/issues
+[license-shield]: https://img.shields.io/github/license/KPR-V/FlashFi.svg?style=for-the-badge
+[license-url]: https://github.com/KPR-V/FlashFi/blob/master/LICENSE.txt
