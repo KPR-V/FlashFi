@@ -151,10 +151,8 @@ export default function Chat() {
             <div className="absolute top-10 text-white">
               <WalletIcon />
             </div>
-            <div className="Absolute top-10 right-10">
-              <CreateWalletButton />
-            </div>
-            <div className="w-[50%] mx-auto bg-zinc-900 max-w-4xl px-4 md:px-6 h-screen flex flex-col">
+           
+            <div className="w-[50%] mx-auto bg-zinc-700 max-w-4xl px-4 md:px-6 h-screen flex flex-col">
               {wsError && (
                 <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-2 rounded-md mt-2">
                   {wsError}
