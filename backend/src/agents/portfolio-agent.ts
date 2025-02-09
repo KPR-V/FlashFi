@@ -1,7 +1,7 @@
 import { createTool, Agent } from "@covalenthq/ai-agent-sdk";
 import { z } from "zod";
 import "dotenv/config";
-import formatTokenBalance from "./utils/format-token-balance";
+import formatTokenBalance from "../utils/format-token-balance";
 import { Chain, GoldRushClient } from "@covalenthq/client-sdk";
 const client = new GoldRushClient(process.env.GOLDRUSH_API_KEY!);
 

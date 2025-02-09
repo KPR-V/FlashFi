@@ -2,7 +2,7 @@ import { createTool, Agent } from "@covalenthq/ai-agent-sdk";
 import { z } from "zod";
 import "dotenv/config";
 import { Chain, GoldRushClient } from "@covalenthq/client-sdk";
-import serializeBigInt from "./utils/serializebigint";
+import serializeBigInt from "../utils/serializebigint";
 const client = new GoldRushClient(process.env.GOLDRUSH_API_KEY!);
 
 // Security Tool: Retrieve token and NFT approvals -- it means the wallet has approved a contract to spend its tokens or NFTs on its behalf without user interaction for each transaction it gives those contracts

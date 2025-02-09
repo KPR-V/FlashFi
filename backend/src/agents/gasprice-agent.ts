@@ -2,7 +2,7 @@ import { createTool, Agent } from "@covalenthq/ai-agent-sdk";
 import { z } from "zod";
 import "dotenv/config";
 import { Chain, GoldRushClient } from "@covalenthq/client-sdk";
-import serializeBigInt from "./utils/serializebigint";
+import serializeBigInt from "../utils/serializebigint";
 const client = new GoldRushClient(process.env.GOLDRUSH_API_KEY!);
 // Get chain values dynamically using getAllChains()
 const getChainValues = async (): Promise<[string, ...string[]]> => {

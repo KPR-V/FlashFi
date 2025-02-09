@@ -3,20 +3,20 @@ import { user } from "@covalenthq/ai-agent-sdk/dist/core/base";
 import { StateFn } from "@covalenthq/ai-agent-sdk/dist/core/state";
 import type { ParsedFunctionToolCall } from "openai/resources/beta/chat/completions";
 import runToolCalls from "./utils/runtoolcalls";
-import { securityAgent, securityTool } from "./security-agent";
-import { gasPriceAgent, gasPriceTool } from "./gasprice-agent";
-import { transactionTool, transactionagent } from "./transaction-agent";
-import { swapAgent, swapTool } from "./swap-agent";
-import { portfolioAgent, portfolioTool } from "./portfolio-agent";
+import { securityAgent, securityTool } from "./agents/security-agent";
+import { gasPriceAgent, gasPriceTool } from "./agents/gasprice-agent";
+import { transactionTool, transactionagent } from "./agents/transaction-agent";
+import { swapAgent, swapTool } from "./agents/swap-agent";
+import { portfolioAgent, portfolioTool } from "./agents/portfolio-agent";
+import { stakeAgent, stakeTool } from "./agents/stake-agent";
+import { bridgeAgent, bridgeTool } from "./agents/bridge-agent";
 async function main() {
-  const state = StateFn.root(swapAgent.description);
+  const state = StateFn.root(bridgeAgent.description);
   state.messages.push(
-    user(
-      "i want to swap 0.001 USDC on Ethereum to ETH on Arbitrum"
-    )
+    user("bridge 10 usdc from eth sepolia to avalanche fuji")
   );
   try {
-    const result = await swapAgent.run(state);
+    const result = await bridgeAgent.run(state);
     console.log(" result:", result);
     const lastMessage = result.messages[result.messages.length - 1] as {
       tool_calls?: ParsedFunctionToolCall[];
@@ -28,7 +28,7 @@ async function main() {
         lastMessage.tool_calls[0].function.arguments
       );
       const toolResponse = await runToolCalls(
-        { swapTool },
+        { bridgeTool },
         lastMessage.tool_calls
       );
       console.log("security result:", toolResponse);
