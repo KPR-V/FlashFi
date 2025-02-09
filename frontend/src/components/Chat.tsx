@@ -5,6 +5,7 @@ import WalletIcon from "./WalletIcon";
 import { TypewriterText } from './ui/TypeWriterText';
 import { useLocation } from "react-router-dom";
 import logo from '../../Images/FlashFiLogo.png'
+import CreateWalletButton from "./CreateWalletButton";
 
 
 interface Message {
@@ -145,6 +146,9 @@ export default function Chat() {
               <img src={logo} alt="" className='absolute top-6 left-8 w-16' />
             <div className="absolute top-10 text-white">
               <WalletIcon />
+            </div>
+            <div className="Absolute top-10 right-10">
+              <CreateWalletButton />
             </div>
             <div className="w-[50%] mx-auto bg-zinc-900 max-w-4xl px-4 md:px-6 h-screen flex flex-col">
               {wsError && (
