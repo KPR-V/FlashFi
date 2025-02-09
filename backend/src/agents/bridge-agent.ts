@@ -13,12 +13,11 @@ interface AttestationResponse {
 
 const web3 = new Web3(process.env.ETH_TESTNET_RPC);
 
-// Initialize signers
 const ethSigner = web3.eth.accounts.privateKeyToAccount(
-  process.env.ETH_PRIVATE_KEY!
+  "0x" + process.env.ETH_PRIVATE_KEY!
 );
 const avaxSigner = web3.eth.accounts.privateKeyToAccount(
-  process.env.AVAX_PRIVATE_KEY!
+  "0x" + process.env.AVAX_PRIVATE_KEY!
 );
 web3.eth.accounts.wallet.add(ethSigner);
 web3.eth.accounts.wallet.add(avaxSigner);
@@ -43,17 +42,15 @@ const bridgeTool = createTool({
   id: "usdc-bridge-tool",
   description: "Bridge USDC between Ethereum and Avalanche using Circle's CCTP",
   schema: z.object({
-    amount: z.string(),
-    recipientAddress: z.string().optional(),
+    amount: z.number(),
   }),
   execute: async (parameters: unknown) => {
     try {
-      const { amount, recipientAddress } = parameters as {
-        amount: string;
-        recipientAddress?: string;
+      const { amount } = parameters as {
+        amount: number;
       };
-      const recipient = recipientAddress || process.env.RECIPIENT_ADDRESS!;
-
+      const recipient = process.env.RECIPIENT_ADDRESS!;
+      const formattedAmount = Number(amount) * 10 ** 6;
       // Initialize contracts
       const contracts = {
         tokenMessenger: new web3.eth.Contract(
@@ -84,10 +81,10 @@ const bridgeTool = createTool({
       const AVAX_DESTINATION_DOMAIN = 1;
       // Step 1: Approve
       const approvetxgas = await contracts.usdc.methods
-        .approve(CONTRACT_ADDRESSES.ETH_TOKEN_MESSENGER, amount)
+        .approve(CONTRACT_ADDRESSES.ETH_TOKEN_MESSENGER, formattedAmount)
         .estimateGas();
       const approveTx = await contracts.usdc.methods
-        .approve(CONTRACT_ADDRESSES.ETH_TOKEN_MESSENGER, amount)
+        .approve(CONTRACT_ADDRESSES.ETH_TOKEN_MESSENGER, formattedAmount)
         .send({ gas: approvetxgas.toString() });
       const approveTxReceipt = await waitForTransaction(
         web3,
@@ -97,7 +94,7 @@ const bridgeTool = createTool({
       // Step 2: Burn
       const burntxgas = await contracts.tokenMessenger.methods
         .depositForBurn(
-          amount,
+          formattedAmount,
           AVAX_DESTINATION_DOMAIN,
           destinationAddressInBytes32,
           CONTRACT_ADDRESSES.USDC_ETH
@@ -105,7 +102,7 @@ const bridgeTool = createTool({
         .estimateGas();
       const burnTx = await contracts.tokenMessenger.methods
         .depositForBurn(
-          amount,
+          formattedAmount,
           1,
           destinationAddressInBytes32,
           CONTRACT_ADDRESSES.USDC_ETH

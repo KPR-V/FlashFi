@@ -24,6 +24,13 @@ interface GasPriceResponse {
   }>;
 }
 
+interface BridgeResponse {
+  status: string;
+  message: string;
+  sourceHash: string;
+  destinationHash: string;
+}
+
 // interface BalanceResponse {
 //   address: string;
 //   chain_name: string;
@@ -111,6 +118,19 @@ export const formatResponse = (content: any): string => {
 
     const data = typeof content === "string" ? JSON.parse(content) : content;
 
+    // Handle bridge operation response
+    if (data.sourceHash && data.destinationHash) {
+      const bridge = data as BridgeResponse;
+      return `🌉 Bridge Operation Status:
+✅ ${bridge.message}
+
+Source Transaction:
+📝 Hash: ${bridge.sourceHash}
+
+Destination Transaction:
+📝 Hash: ${bridge.destinationHash}`;
+    }
+
     // Handle insufficient funds error object
     if (
       data.code === "INSUFFICIENT_FUNDS" ||
@@ -158,7 +178,7 @@ export const formatResponse = (content: any): string => {
         is_spam: boolean;
       }
 
-            return `Wallet Balance on ${balanceData.chain_name}:
+      return `Wallet Balance on ${balanceData.chain_name}:
       👛 Address: ${balanceData.address}
 
       ${balanceData.balances
@@ -166,8 +186,11 @@ export const formatResponse = (content: any): string => {
           const balance: number = parseFloat(token.balance);
           const balance24h: number = parseFloat(token.balance_24h);
           const change: number = balance - balance24h;
-          const changeSymbol: string = change > 0 ? "📈" : change < 0 ? "📉" : "➡️";
-          const changePercent: string = ((change / balance24h) * 100).toFixed(2);
+          const changeSymbol: string =
+            change > 0 ? "📈" : change < 0 ? "📉" : "➡️";
+          const changePercent: string = ((change / balance24h) * 100).toFixed(
+            2
+          );
 
           return `${token.native_token ? "🏦" : "💰"} ${token.token_name} (${
             token.symbol
