@@ -159,6 +159,157 @@ app.get(
   }
 );
 
+app.post("/create-policy", async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { policyName, allowlist, denylist, nativeLimit, erc20Limit } = req.body;
+
+    // Base policy structure
+    const policyData = {
+      version: "1.0",
+      name: policyName,
+      chain_type: "ethereum",
+      method_rules: [] as any[],
+      default_action: "DENY"
+    };
+
+    // Add allowlist rule if enabled
+    if (allowlist) {
+      policyData.method_rules.push({
+        method: "eth_sendTransaction",
+        rules: [{
+          name: "Allowlist contract",
+          conditions: [{
+            field_source: "ethereum_transaction",
+            field: "to",
+            operator: "eq",
+            value: allowlist.address
+          }],
+          action: "ALLOW"
+        }]
+      });
+    }
+
+    // Add denylist rule if enabled
+    if (denylist) {
+      policyData.method_rules.push({
+        method: "eth_sendTransaction",
+        rules: [{
+          name: "Denylist address",
+          conditions: [{
+            field_source: "ethereum_transaction",
+            field: "to",
+            operator: "eq",
+            value: denylist.address
+          }],
+          action: "DENY"
+        }]
+      });
+      policyData.default_action = "ALLOW";
+    }
+
+    // Add native token limit rule if enabled
+    if (nativeLimit) {
+      const valueInWei = BigInt(Math.floor(parseFloat(nativeLimit.max) * 1e18)).toString();
+      policyData.method_rules.push({
+        method: "eth_sendTransaction",
+        rules: [{
+          name: "Native token transfer maximum",
+          conditions: [{
+            field_source: "ethereum_transaction",
+            field: "value",
+            operator: "leq",
+            value: valueInWei
+          }],
+          action: "ALLOW"
+        }]
+      });
+    }
+
+    // Add ERC20 limit rule if enabled
+    if (erc20Limit) {
+      const tokenAmount = BigInt(Math.floor(parseFloat(erc20Limit.maxAmount) * 1e18)).toString();
+      policyData.method_rules.push({
+        method: "eth_sendTransaction",
+        rules: [{
+          name: "ERC20 transfer maximum",
+          conditions: [
+            {
+              field_source: "ethereum_transaction",
+              field: "to",
+              operator: "eq",
+              value: erc20Limit.contractAddress
+            },
+            {
+              field_source: "ethereum_transaction",
+              field: "chain_id",
+              operator: "eq",
+              value: erc20Limit.chainId
+            },
+            {
+              field_source: "ethereum_calldata",
+              field: "transfer.amount",
+              abi: [{
+                inputs: [
+                  {
+                    internalType: "address",
+                    name: "recipient",
+                    type: "address"
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "amount",
+                    type: "uint256"
+                  }
+                ],
+                name: "transfer",
+                outputs: [
+                  {
+                    internalType: "bool",
+                    name: "",
+                    type: "bool"
+                  }
+                ],
+                stateMutability: "nonpayable",
+                type: "function"
+              }],
+              operator: "leq",
+              value: tokenAmount
+            }
+          ],
+          action: "ALLOW"
+        }]
+      });
+    }
+
+    // Make API request to create policy
+    const response = await fetch("https://api.privy.io/v1/policies", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "privy-app-id": process.env.PRIVY_APP_ID!,
+        Authorization: `Basic ${Buffer.from(
+          `${process.env.PRIVY_APP_ID}:${process.env.PRIVY_APP_SECRET}`
+        ).toString("base64")}`
+      },
+      body: JSON.stringify(policyData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Policy creation failed: ${await response.text()}`);
+    }
+
+    const createdPolicy = await response.json();
+    console.log("Created Policy:", createdPolicy);
+    res.json(createdPolicy);
+  } catch (error) {
+    console.error("Policy creation error:", error);
+    res.status(500).json({
+      error: "Failed to create policy",
+      details: error instanceof Error ? error.message : "Unknown error"
+    });
+  }
+});
+
 
 
 const server = createServer(app);

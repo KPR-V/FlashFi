@@ -66,7 +66,7 @@ export default function CreateWalletPolicyModal({
         erc20Limit: erc20LimitEnabled ? erc20Config : null,
       };
 
-      const response = await fetch('http://localhost:3001/create-policy', {
+      const response = await fetch('http://localhost:3000/create-policy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(policyData)

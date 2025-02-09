@@ -4,6 +4,8 @@ import { InfiniteMovingCardsDemo } from './InfiniteMovingCardsDemo';
 import SendTransactionModal from './SendTransactionModal'
 import  DropDown  from './ui/DropDown'
 import Logo from '../../Images/FlashFiLogo.png'
+import ReceiveFundsModal from './RecieveFundsModal';
+
 
 
 
@@ -42,7 +44,8 @@ const WalletIcon = () => {
   const [walletBalances, setWalletBalances] = useState<Record<string, number>>({});
   const [loadingBalances, setLoadingBalances] = useState<Record<string, boolean>>({});
   const [balanceErrors, setBalanceErrors] = useState<Record<string, string>>({});  const [chainId, setChainId] = useState<string>('11155111'); // Default to Sepolia testnet
-  
+  const [showReceiveModal, setShowReceiveModal] = useState(false);
+
 
   const walletRef = useRef<HTMLDivElement>(null);
   const accountSelectorRef = useRef<HTMLDivElement>(null);
@@ -279,6 +282,61 @@ useEffect(() => {
 
             {/* Wallet details */}
             <div className='h-[360px] bg-zinc-950 w-full rounded-b-lg absolute top-14'>
+    <div className='flex flex-col bg-zinc-900 w-full h-full rounded-b-lg'>
+        {/* Wallet info */}
+        <div className='flex justify-between'>
+            <div className='text-white py-4'>
+                <div className='text-4xl px-5 tracking-tighter'>
+                {!selectedWallet ? (
+                    <div className="text-gray-400">Select Wallet</div>
+                ) : (
+                    isShowWalletAmount ? (
+                        <div>
+                        {loadingBalances[selectedWallet.address] ? (
+                            <p>Loading balance...</p>
+                        ) : balanceErrors[selectedWallet.address] ? (
+                            <p className="text-red-400">{balanceErrors[selectedWallet.address]}</p>
+                        ) : (
+                            <p>
+                            {walletBalances[selectedWallet.address] !== undefined ? (
+                                `${walletBalances[selectedWallet.address].toFixed(4)} ${
+                                chainId === '1' ? 'ETH' : 'SepoliaETH'
+                                }`
+                            ) : (
+                                'Not available'
+                            )}
+                            </p>
+                        )}
+                        </div>
+                    ) : (
+                        <div>*****</div>
+                    )
+                )}
+                </div>
+                <div className='px-5'>
+                    {!selectedWallet ? (
+                        <div className="text-gray-400 text-sm">Choose a wallet from above</div>
+                    ) : (
+                        isShowWalletAmount ? (
+                            <div>{selectedWallet.chainType}</div>
+                        ) : (
+                            <div>***</div>
+                        )
+                    )}
+                </div>
+            </div>
+            {selectedWallet && (
+                <div className='absolute top-7 right-5' onClick={() => setIsShowWalletAmount(!isShowWalletAmount)}>
+                    {isShowWalletAmount ? <Eye/> : <EyeOff/>}
+                </div>
+            )}
+        </div>
+        {/* ... rest of the wallet details code ... */}
+    </div>
+</div>
+
+            {/* Wallet details */}
+            <div className='h-[360px] bg-zinc-950 w-full rounded-b-lg absolute top-14'>
                 <div className='flex flex-col bg-zinc-900 w-full h-full rounded-b-lg'>
                     {/* Wallet info */}
                     <div className='flex justify-between'>
@@ -338,22 +396,23 @@ useEffect(() => {
 
       {/* Scan QR Code Action */}
       <div 
-        className={`
-          ${hoveredAction === 'scanQr' 
-            ? 'w-48 transition-all duration-500 ease-in-out' 
-            : 'w-16'} 
-          h-16 bg-zinc-950 rounded-full flex items-center justify-center mx-2 transition-all duration-300 ease-in-out
-        `}
-        onMouseEnter={() => setHoveredAction('scanQr')}
-        onMouseLeave={() => setHoveredAction(null)}
-      >
-        <div className='flex items-center'>
-          <ScanQrCode size={24} className='text-white' />
-          {hoveredAction === 'scanQr' && (
-            <span className='text-white ml-2 whitespace-nowrap'>Receive Funds</span>
-          )}
-        </div>
-      </div>
+  className={`
+    ${hoveredAction === 'scanQr' 
+      ? 'w-48 transition-all duration-500 ease-in-out' 
+      : 'w-16'} 
+    h-16 bg-zinc-950 rounded-full flex items-center justify-center mx-2 transition-all duration-300 ease-in-out cursor-pointer
+  `}
+  onMouseEnter={() => setHoveredAction('scanQr')}
+  onMouseLeave={() => setHoveredAction(null)}
+  onClick={() => setShowReceiveModal(true)}
+>
+  <div className='flex items-center'>
+    <ScanQrCode size={24} className='text-white' />
+    {hoveredAction === 'scanQr' && (
+      <span className='text-white ml-2 whitespace-nowrap'>Receive Funds</span>
+    )}
+  </div>
+</div>
 
       {/* Settings Action */}
       <div 
@@ -425,6 +484,12 @@ useEffect(() => {
           }
         }}
       />
+
+<ReceiveFundsModal
+  isOpen={showReceiveModal}
+  onClose={() => setShowReceiveModal(false)}
+  walletAddress={selectedWallet?.address || ''}
+/>
     </div>
   );
 };

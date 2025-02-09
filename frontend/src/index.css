@@ -57,3 +57,33 @@
 @keyframes cursor {
   50% { border-color: transparent; }
 }
+
+
+@keyframes shine-border {
+  0% {
+    border-image: linear-gradient(
+      45deg,
+      #f9a8d4 0%,
+      #f472b6 25%,
+      #ffffff 50%,
+      #f472b6 75%,
+      #f9a8d4 100%
+    ) 1;
+  }
+  100% {
+    border-image: linear-gradient(
+      45deg,
+      #f9a8d4 100%,
+      #f472b6 0%,
+      #ffffff 25%,
+      #f472b6 50%,
+      #f9a8d4 75%
+    ) 1;
+  }
+}
+
+.shiny-border {
+  border-width: 1px;
+  border-style: solid;
+  animation: shine-border 3s linear infinite;
+}

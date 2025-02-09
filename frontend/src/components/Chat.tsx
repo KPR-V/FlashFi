@@ -8,6 +8,7 @@ import logo from '../../Images/FlashFiLogo.png'
 import CreateWalletButton from "./CreateWalletButton";
 
 
+
 interface Message {
   role: "user" | "assistant" | "tool-response" | "error";
   content: string;
@@ -142,8 +143,11 @@ export default function Chat() {
         
 
         return (
-          <div className="w-full min-h-screen bg-zinc-950 flex justify-center">
+          <div className="w-full min-h-screen bg-zinc-950 flex justify-center Highest">
               <img src={logo} alt="" className='absolute top-6 left-8 w-16' />
+              <div className="absolute top-10 right-28 bg-transparent text-pink-400 border-[1px] border-pink-300  py-2 px-4 rounded-xl focus:outline-none focus:shadow-outline">
+                <CreateWalletButton/>
+              </div>
             <div className="absolute top-10 text-white">
               <WalletIcon />
             </div>
@@ -163,7 +167,7 @@ export default function Chat() {
     className={`p-4 rounded-lg ${
       msg.role === "user"
         ? "bg-pink-300 ml-auto max-w-[80%]"
-        : "bg-zinc-800 mr-auto max-w-[80%]"
+        : "bg-zinc-900 mr-auto max-w-[80%]"
     }`}
   >
     <div 
@@ -183,9 +187,9 @@ export default function Chat() {
                 {isLoading && (
                   <div className="bg-zinc-700 mr-auto max-w-[80%] p-4 rounded-lg">
                     <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                      <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                      <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-pink-300 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                      <div className="w-2 h-2 bg-pink-300 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                      <div className="w-2 h-2 bg-pink-300 rounded-full animate-bounce"></div>
                     </div>
                   </div>
                 )}
