@@ -135,7 +135,7 @@ app.get(
         return;
       }
       const baseUrl =
-        network === "mainnet"
+        network === "ethereum"
           ? "https://api.etherscan.io/api"
           : "https://api-sepolia.etherscan.io/api";
       const { data } = await axios.get(baseUrl, {
@@ -149,12 +149,17 @@ app.get(
       });
       if (data.status !== "1")
         throw new Error(data.message || "Failed to fetch balance");
-      res.json({ balance: parseInt(data.result) / 1e18 });
+      
+      const balance = BigInt(data.result);
+      const formattedBalance = Number(balance) / 1e18;
+      res.json({ balance: formattedBalance });
     } catch (error) {
       return handleError(res, error, "Failed to fetch wallet balance");
     }
   }
 );
+
+
 
 const server = createServer(app);
 const wss = new WebSocketServer({ server });

@@ -30,8 +30,10 @@ export default function PlaceholdersAndVanishInputDemo() {
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const message = formData.get("message") as string;
     const chatId = generateChatId();
-    navigate(`/chat/${chatId}`);
+    navigate(`/chat/${chatId}`, { state: { initialMessage: message } });
   };
 
   return (

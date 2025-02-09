@@ -48,3 +48,12 @@
 .shadow-glow {
   box-shadow: 0 0 45px 25px rgba(236, 72, 153, 0.7);
 }
+
+.typing-cursor {
+  border-right: 2px solid;
+  animation: cursor 0.7s step-end infinite alternate;
+}
+
+@keyframes cursor {
+  50% { border-color: transparent; }
+}

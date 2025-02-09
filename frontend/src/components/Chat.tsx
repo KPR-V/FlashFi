@@ -2,6 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { PlaceholdersAndVanishInput } from "./ui/placeholders-and-vanish-input";
 import { formatResponse } from "../utils/formatResponse";
 import WalletIcon from "./WalletIcon";
+import { TypewriterText } from './ui/TypeWriterText';
+import { useLocation } from "react-router-dom";
+import logo from '../../Images/FlashFiLogo.png'
+
 
 interface Message {
   role: "user" | "assistant" | "tool-response" | "error";
@@ -9,38 +13,54 @@ interface Message {
 }
 
 export default function Chat() {
+    const location = useLocation();
+    const initialMessage = location.state?.initialMessage;
+
     const [messages, setMessages] = useState<Message[]>([]);
     const [ws, setWs] = useState<WebSocket | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [wsError, setWsError] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const initialMessageSent = useRef(false);
     useEffect(() => {
         console.log("Initializing WebSocket connection...");
         const connectWebSocket = () => {
             const websocket = new WebSocket("ws://localhost:3000");
 
             websocket.onopen = () => {
-                console.log("✅ WebSocket connection established");
-                setWs(websocket);
-                setWsError(null);
-            };
+              console.log("✅ WebSocket connection established");
+              setWs(websocket);
+              setWsError(null);
+              if (initialMessage && !initialMessageSent.current) {
+                  const cleanInitialMessage = initialMessage.trim();
+                  console.log("Sending initial message:", cleanInitialMessage);
+                  websocket.send(cleanInitialMessage);
+                  setMessages([{ role: "user", content: cleanInitialMessage }]);
+                  setIsLoading(true);
+                  initialMessageSent.current = true;
+              }
+          };
 
-            websocket.onmessage = (event) => {
-                console.log("📩 Received message from server:", event.data);
-                setIsLoading(false);
-                try {
-                    const data = JSON.parse(event.data);
-                    setMessages((prev) => [
-                        ...prev,
-                        {
-                            role: data.type,
-                            content: formatResponse(data.content),
-                        },
-                    ]);
-                } catch (error) {
-                    console.error("❌ Failed to parse message:", error);
-                }
-            };
+
+
+          websocket.onmessage = (event) => {
+            console.log("📩 Received message from server:", event.data);
+            setIsLoading(false);
+            try {
+                const data = JSON.parse(event.data);
+                const formattedContent = formatResponse(data.content);
+                console.log("Formatted content:", formattedContent); // Debug log
+                setMessages((prev) => [
+                    ...prev,
+                    {
+                        role: data.type,
+                        content: formattedContent,
+                    },
+                ]);
+            } catch (error) {
+                console.error("❌ Failed to parse message:", error);
+            }
+        };
 
             websocket.onclose = () => {
                 console.log("Disconnected from server");
@@ -62,7 +82,7 @@ export default function Chat() {
                 ws.close();
             }
         };
-    }, []);
+    }, [initialMessage]);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -71,33 +91,35 @@ export default function Chat() {
   
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        console.log("Form submitted");
-
-        // Get the message from the form
-        const form = e.target as HTMLFormElement;
-        const formData = new FormData(form);
-        const message = formData.get("message") as string;
-
-        console.log("Message to send:", message);
-
-   
-
-        if (message && ws && ws.readyState === WebSocket.OPEN) {
-            console.log("📤 Sending message to WebSocket");
-            setIsLoading(true);
-            setMessages((prev) => [...prev, { role: "user", content: message }]);
-            ws.send(message);
-            form.reset();
-        } else {
-            console.error("❌ WebSocket not ready:", {
-                message: !!message,
-                ws: !!ws,
-                readyState: ws?.readyState,
-            });
-            setWsError("Connection lost. Please try again.");
-        }
-    };
+      e.preventDefault();
+      console.log("Form submitted");
+  
+      const form = e.target as HTMLFormElement;
+      const formData = new FormData(form);
+      const message = formData.get("message") as string;
+  
+      // Trim the message but preserve all characters
+      const cleanMessage = message.trim();
+  
+      console.log("Message to send:", cleanMessage);
+  
+      if (cleanMessage && ws && ws.readyState === WebSocket.OPEN) {
+          console.log("📤 Sending message to WebSocket");
+          setIsLoading(true);
+          // Add the exact message to the messages array
+          setMessages((prev) => [...prev, { role: "user", content: cleanMessage }]);
+          // Send the exact message through WebSocket
+          ws.send(cleanMessage);
+          form.reset();
+      } else {
+          console.error("❌ WebSocket not ready:", {
+              message: !!cleanMessage,
+              ws: !!ws,
+              readyState: ws?.readyState,
+          });
+          setWsError("Connection lost. Please try again.");
+      }
+  };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         // Process the input change if needed
@@ -110,9 +132,19 @@ export default function Chat() {
             "Send 0.1 ETH to 0x...",
             "Check my token approvals",
         ];
+        
+        const formatBulletPoints = (text: string) => {
+          return text.split('• ').map((point, index) => {
+            if (index === 0 && !point.trim()) return null;
+            return point.trim() && `• ${point.trim()}`;
+          }).filter(Boolean).join('\n');
+        };
+        
+        
 
         return (
           <div className="w-full min-h-screen bg-zinc-950 flex justify-center">
+              <img src={logo} alt="" className='absolute top-6 left-8 w-16' />
             <div className="absolute top-10 text-white">
               <WalletIcon />
             </div>
@@ -122,21 +154,30 @@ export default function Chat() {
                   {wsError}
                 </div>
               )}
-              <div className="flex-1 overflow-y-auto py-4 space-y-4">
-                {messages.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={`p-4 rounded-lg ${
-                      msg.role === "user"
-                        ? "bg-zinc-800 ml-auto max-w-[80%]"
-                        : "bg-zinc-700 mr-auto max-w-[80%]"
-                    }`}
-                  >
-                    <pre className="whitespace-pre-wrap text-white font-mono text-sm">
-                      {msg.content}
-                    </pre>
-                  </div>
-                ))}
+              <div className="flex-1 overflow-y-auto py-4 space-y-4 no-scrollbar font-CabinetGrotesk">
+              {messages.map((msg, idx) => (
+  <div
+    key={idx}
+    className={`p-4 rounded-lg ${
+      msg.role === "user"
+        ? "bg-pink-300 ml-auto max-w-[80%]"
+        : "bg-zinc-800 mr-auto max-w-[80%]"
+    }`}
+  >
+    <div 
+      className={`whitespace-pre-line text-sm ${
+        msg.role === "user" ? "text-black" : "text-white"
+      }`}
+    >
+      <TypewriterText 
+        text={msg.role === "user" 
+          ? msg.content 
+          : formatBulletPoints(msg.content)
+        } 
+      />
+    </div>
+  </div>
+))}
                 {isLoading && (
                   <div className="bg-zinc-700 mr-auto max-w-[80%] p-4 rounded-lg">
                     <div className="flex items-center space-x-2">
