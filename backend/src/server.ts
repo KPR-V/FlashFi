@@ -7,7 +7,6 @@ import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { PrivyClient } from "@privy-io/server-auth";
 
-
 import {
   blockchainAgent,
   transactionTool,
@@ -35,12 +34,10 @@ app.use(
   })
 );
 
-
 const privy = new PrivyClient(
   process.env.PRIVY_APP_ID!,
   process.env.PRIVY_APP_SECRET!
 );
-
 
 const handleError = (res: Response, error: unknown, message: string): void => {
   console.error(message, error);
@@ -50,11 +47,9 @@ const handleError = (res: Response, error: unknown, message: string): void => {
   });
 };
 
-
 app.get("/health", (_req: Request, res: Response): void => {
   res.status(200).json({ status: "ok" });
 });
-
 
 app.post(
   "/create-wallet",
@@ -67,7 +62,6 @@ app.post(
     }
   }
 );
-
 
 app.get("/get-wallets", async (_req: Request, res: Response): Promise<void> => {
   try {
@@ -86,7 +80,6 @@ app.get("/get-wallets", async (_req: Request, res: Response): Promise<void> => {
     return handleError(res, error, "Failed to fetch wallets");
   }
 });
-
 
 app.post(
   "/sign-message",
@@ -107,7 +100,6 @@ app.post(
     }
   }
 );
-
 
 app.post(
   "/send-transaction",
@@ -131,7 +123,6 @@ app.post(
     }
   }
 );
-
 
 app.get(
   "/wallet-balance/:address",
@@ -165,10 +156,8 @@ app.get(
   }
 );
 
-
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
-
 
 const chatStates = new Map<string, any>();
 
@@ -188,6 +177,18 @@ wss.on("connection", (ws) => {
     const lastMessage = result.messages[result.messages.length - 1];
     console.log("\n=== Agent Response ===");
     console.log(JSON.stringify(lastMessage, null, 2));
+
+    // If the last message is a direct assistant response (no tool calls)
+    if (lastMessage.role === "assistant" && lastMessage.content) {
+      ws.send(
+        JSON.stringify({
+          type: "assistant",
+          content: lastMessage.content,
+        })
+      );
+      return;
+    }
+
     let toolCalls = (lastMessage as any)?.tool_calls || [];
     const messageType = userMessage.toLowerCase();
     if (messageType.includes("stake") && toolCalls.length === 0) {
@@ -205,7 +206,6 @@ wss.on("connection", (ws) => {
       ];
     }
 
-
     if (toolCalls.length === 0) {
       console.log("No tool calls available to process");
       ws.send(
@@ -218,7 +218,6 @@ wss.on("connection", (ws) => {
       return;
     }
 
-  
     const tools: Record<string, Tool> = messageType.includes("stake")
       ? { stakeTool }
       : {
@@ -236,13 +235,12 @@ wss.on("connection", (ws) => {
             ? { bridgeTool }
             : messageType.includes("send")
             ? { transactionTool }
-            : { combinedChatTool }), 
+            : { combinedChatTool }),
         };
 
     console.log("Available tools:", Object.keys(tools));
     console.log("Processing tool calls:", JSON.stringify(toolCalls, null, 2));
 
-    
     for (const toolCall of toolCalls) {
       try {
         const toolResponse = await runToolCalls(tools, [toolCall]);
